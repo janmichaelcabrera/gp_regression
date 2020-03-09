@@ -117,5 +117,7 @@ class gaussian_process:
     def rvs(self, size=None):
         if not hasattr(self, 'M'):
             self.calc_mean_cov()
-            print('test')
         return stats.multivariate_normal.rvs(mean=self.post_mean, cov=self.post_cov, size=size)
+
+    def prior_rvs(self, size=None):
+        return stats.multivariate_normal.rvs(mean=np.zeros(len(self.y)), cov=self.C_xx, size=size)
