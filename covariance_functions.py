@@ -7,14 +7,38 @@ from scipy.spatial import distance_matrix
 
 class covariance_functions:
     """
-    This class contains covariance function for Gaussian process regression
+    This class contains covariance functions for FPR
     """
     def __init__(self, b, tau_1, tau_2=10**-6):
+        """
+        Parameters
+        ----------
+            b: float (scalar)
+                Bandwidth parameter
+
+            tau_1: float (scalar)
+                Scale parameter
+                
+            tau_2: float (scalar)
+                Noise parameter
+        """
         self.b = b
         self.tau_1 = tau_1
         self.tau_2 = tau_2
 
     def squared_exponential(self, x_1, x_2):
+        """
+        Parameters
+        ----------
+            x: float (vector)
+                Vector of points
+
+        Returns
+        ----------
+            C: float (array_like)
+                Returns a Squared Exponential square covariance matrix of size(x)
+                .. math:: C_{SE}(x_1, x_2) = \\tau_1^2 e^{-\\frac{1}{2} (d/b)^2} + \\tau_2^2 \\delta(x_1, x_2)
+        """
         if len(x_1.shape) == 1:
             X_1 = [[i] for i in x_1]
             X_2 = [[i] for i in x_2]
@@ -31,114 +55,60 @@ class covariance_functions:
 
         return C
 
-    # def __init__(self):
-    #     pass
+    def matern_32(self, x_1, x_2):
+        """
+        Parameters
+        ----------
+            x: float (vector)
+                Vector of points
 
-    # def squared_exponential(x_1, x_2, hyperparams):
-    #     """
-    #     Parameters
-    #     ----------
-    #         x: float (vector)
-    #             Vector of points
+        Returns
+        ----------
+            C: float (array_like)
+                Returns a Matern (3,2) square covariance matrix of size(x)
+                .. math:: C_{3,2}(x_1, x_2) = \\tau_1^2 [1 + \\sqrt{3} d / b] e^{-\\sqrt{3} (d/b)} + \\tau_2^2 \\delta(x_1, x_2)
+        """
+        if len(x_1.shape) == 1:
+            X_1 = [[i] for i in x_1]
+            X_2 = [[i] for i in x_2]
+        else:
+            X_1 = x_1
+            X_2 = x_2
 
-    #     Returns
-    #     ----------
-    #         C: float (matrix)
-    #             Returns a Matern (5,2) square covariance matrix of size(x)
-    #             .. math:: C_{SE}(x_1, x_2) = \\tau_1^2 e^{-\\frac{1}{2} (d/b)^2} + \\tau_2^2 \\delta(x_1, x_2)
-    #     """
+        C = distance_matrix(X_1, X_2)
 
-    #     # Unpack hypereparameters
-    #     b, tau_1_squared, tau_2_squared = hyperparams
+        C = self.tau_1*(1 + np.sqrt(3)*(C/self.b))*np.exp(-np.sqrt(3)*(C/self.b))
 
-    #     # Initialize covariance matrix
-    #     C = np.zeros((x_1.shape[0], x_2.shape[0]))
+        if np.array_equal(x_1, x_2) == True:
+            C = C + self.tau_2*np.eye(x_1.shape[0])
 
-    #     if len(x_1.shape) == 1:
-    #         X_1 = [[i] for i in x_1]
-    #         X_2 = [[i] for i in x_2]
-    #     else:
-    #         X_1 = x_1
-    #         X_2 = x_2
+        return C
 
-    #     C = distance_matrix(X_1, X_2)
+    def matern_52(self, x_1, x_2):
+        """
+        Parameters
+        ----------
+            x: float (vector)
+                Vector of points
 
-    #     C = tau_1_squared*np.exp(-(1/2)*(C/b)**2)
+        Returns
+        ----------
+            C: float (array_like)
+                Returns a Matern (5,2) square covariance matrix of size(x)
+                .. math:: C_{5,2}(x_1, x_2) = \\tau_1^2 [1 + \\sqrt{5} d / b + (5/3) (d/b)^2 ] e^{-\\sqrt{5} (d/b)} + \\tau_2^2 \\delta(x_1, x_2)
+        """
+        if len(x_1.shape) == 1:
+            X_1 = [[i] for i in x_1]
+            X_2 = [[i] for i in x_2]
+        else:
+            X_1 = x_1
+            X_2 = x_2
 
-    #     if np.array_equal(x_1, x_2) == True:
-    #         C = C + tau_2_squared*np.eye(x_1.shape[0])
+        C = distance_matrix(X_1, X_2)
 
-    #     return C
+        C = self.tau_1*(1 + np.sqrt(5)*(C/self.b) + (5/3)*(C/self.b)**2)*np.exp(-np.sqrt(5)*(C/self.b))
 
-    # def matern_32(x_1, x_2, hyperparams):
-    #     """
-    #     Parameters
-    #     ----------
-    #         x: float (vector)
-    #             Vector of points
+        if np.array_equal(x_1, x_2) == True:
+            C = C + self.tau_2*np.eye(x_1.shape[0])
 
-    #     Returns
-    #     ----------
-    #         C: float (matrix)
-    #             Returns a Matern (5,2) square covariance matrix of size(x)
-    #             .. math:: C_{5,2}(x_1, x_2) = \\tau_1^2 [1 + \\sqrt{5} d / b + (5/3) (d/b)^2 ] e^{-\\sqrt{5} (d/b)} + \\tau_2^2 \\delta(x_1, x_2)
-    #     """
-
-    #     # Unpack hypereparameters
-    #     b, tau_1_squared, tau_2_squared = hyperparams
-
-    #     # Initialize covariance matrix
-    #     C = np.zeros((x_1.shape[0], x_2.shape[0]))
-
-    #     if len(x_1.shape) == 1:
-    #         X_1 = [[i] for i in x_1]
-    #         X_2 = [[i] for i in x_2]
-    #     else:
-    #         X_1 = x_1
-    #         X_2 = x_2
-
-    #     C = distance_matrix(X_1, X_2)
-
-    #     C = tau_1_squared*(1 + np.sqrt(3)*(C/b))*np.exp(-np.sqrt(3)*(C/b))
-
-    #     if np.array_equal(x_1, x_2) == True:
-    #         C = C + tau_2_squared*np.eye(x_1.shape[0])
-
-    #     return C
-
-    # def matern_52(x_1, x_2, hyperparams):
-    #     """
-    #     Parameters
-    #     ----------
-    #         x: float (vector)
-    #             Vector of points
-
-    #     Returns
-    #     ----------
-    #         C: float (matrix)
-    #             Returns a Matern (5,2) square covariance matrix of size(x)
-    #             .. math:: C_{5,2}(x_1, x_2) = \\tau_1^2 [1 + \\sqrt{5} d / b + (5/3) (d/b)^2 ] e^{-\\sqrt{5} (d/b)} + \\tau_2^2 \\delta(x_1, x_2)
-    #     """
-
-    #     # Unpack hypereparameters
-    #     b, tau_1_squared, tau_2_squared = hyperparams
-
-
-    #     # Initialize covariance matrix
-    #     C = np.zeros((x_1.shape[0], x_2.shape[0]))
-
-    #     if len(x_1.shape) == 1:
-    #         X_1 = [[i] for i in x_1]
-    #         X_2 = [[i] for i in x_2]
-    #     else:
-    #         X_1 = x_1
-    #         X_2 = x_2
-
-    #     C = distance_matrix(X_1, X_2)
-
-    #     C = tau_1_squared*(1 + np.sqrt(5)*(C/b) + (5/3)*(C/b)**2)*np.exp(-np.sqrt(5)*(C/b))
-
-    #     if np.array_equal(x_1, x_2) == True:
-    #         C = C + tau_2_squared*np.eye(x_1.shape[0])
-
-    #     return C
+        return C

@@ -18,7 +18,7 @@ y_obs = y_true + stats.norm.rvs(scale=sigma**2, size=len(x))
 
 cov = gp.covariance_functions(2, 150, 10**-6)
 
-gp_obj = gp.gaussian_process(x, x, y_obs, sigma, cov)
+gp_obj = gp.gaussian_process(x, x, y_obs, sigma, cov, cov_func='matern_52')
 
 print(gp_obj.log_marginal_likelihood())
 
