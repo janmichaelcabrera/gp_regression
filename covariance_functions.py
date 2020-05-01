@@ -46,9 +46,67 @@ class covariance_functions:
             X_1 = x_1
             X_2 = x_2
 
-        D = distance_matrix(X_1, X_2)
+        D = distance_matrix(X_1, X_2, p=1)
 
-        C = self.tau_1*np.exp(-(1/2)*(D/self.b)**2)
+        C = self.tau_1*np.exp(-(1/2)*D**2/(self.b)**2)
+
+        if np.array_equal(x_1, x_2) == True:
+            C = C + self.tau_2*np.eye(x_1.shape[0])
+
+        return C
+
+    def dx1_squared_exponential(self, x_1, x_2):
+        """
+        Parameters
+        ----------
+            x: float (vector)
+                Vector of points
+
+        Returns
+        ----------
+            C: float (array_like)
+                Returns a Squared Exponential square covariance matrix of size(x)
+                .. math:: C_{SE}(x_1, x_2) = \\tau_1^2 e^{-\\frac{1}{2} (d/b)^2} + \\tau_2^2 \\delta(x_1, x_2)
+        """
+        if len(x_1.shape) == 1:
+            X_1 = [[i] for i in x_1]
+            X_2 = [[i] for i in x_2]
+        else:
+            X_1 = x_1
+            X_2 = x_2
+
+        D = distance_matrix(X_1, X_2, p=1)
+
+        C = self.tau_1*np.exp(-(1/2)*D**2/(self.b)**2)*(-1/self.b**2)*D
+
+        if np.array_equal(x_1, x_2) == True:
+            C = C + self.tau_2*np.eye(x_1.shape[0])
+
+        return C
+
+    def dx1dx2_squared_exponential(self, x_1, x_2):
+        """
+        Parameters
+        ----------
+            x: float (vector)
+                Vector of points
+
+        Returns
+        ----------
+            C: float (array_like)
+                Returns a Squared Exponential square covariance matrix of size(x)
+                .. math:: C_{SE}(x_1, x_2) = \\tau_1^2 e^{-\\frac{1}{2} (d/b)^2} + \\tau_2^2 \\delta(x_1, x_2)
+        """
+        if len(x_1.shape) == 1:
+            X_1 = [[i] for i in x_1]
+            X_2 = [[i] for i in x_2]
+        else:
+            X_1 = x_1
+            X_2 = x_2
+
+        D = distance_matrix(X_1, X_2, p=1)
+
+        C = self.tau_1*np.exp(-(1/2)*D**2/(self.b)**2)*(1/self.b**2)*(1 - (1/self.b**2)*D**2)
 
         if np.array_equal(x_1, x_2) == True:
             C = C + self.tau_2*np.eye(x_1.shape[0])
