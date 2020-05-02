@@ -75,12 +75,17 @@ class covariance_functions:
             X_1 = x_1
             X_2 = x_2
 
-        D = distance_matrix(X_1, X_2, p=1)
+        C = np.zeros((len(x_1), len(x_2)))
 
-        C = self.tau_1*np.exp(-(1/2)*D**2/(self.b)**2)*(-1/self.b**2)*D
+        for i in range(len(x_1)):
+            for j in range(len(x_2)):
+                C[i, j] = self.tau_1*np.exp(-(x_1[i] - x_2[j])**2/(2*self.b**2))*(-1/self.b**2)*(x_1[i] - x_2[j])
+        # D = distance_matrix(X_1, X_2, p=1)
 
-        if np.array_equal(x_1, x_2) == True:
-            C = C + self.tau_2*np.eye(x_1.shape[0])
+        # C = self.tau_1*np.exp(-(1/2)*D**2/(self.b)**2)*(-1/self.b**2)*D
+
+        # if np.array_equal(x_1, x_2) == True:
+        #     C = C + self.tau_2*np.eye(x_1.shape[0])
 
         return C
 
