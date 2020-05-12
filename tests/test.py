@@ -48,9 +48,9 @@ def testfit():
     plt.plot(x, y_low, '-b')
     plt.show()
 
-x = np.linspace(0, 4, num=5)
+x = np.linspace(0, 4, num=3)
 
-b, tau_1, tau_2 = 20, 1, 10**6
+b, tau_1, tau_2 = 20, 1, 10**-6
 
 K_11 = gp.covariance_functions(b, tau_1, tau_2).squared_exponential(x, x)
 
@@ -59,8 +59,8 @@ K_11 = gp.covariance_functions(b, tau_1, tau_2).squared_exponential(x, x)
 ind_1 = 0
 ind_2 = -1
 
-slope_1 = 1
-slope_2 = 1
+slope_1 = 0
+slope_2 = 0
 
 L_1 = np.gradient(K_11, x, axis=0)[ind_1]
 L_1_sq = np.gradient(L_1, x)[ind_1]
@@ -77,6 +77,13 @@ K_21 = K_12.T
 
 l_mu = np.array([slope_1, slope_2])
 
+print(L_1)
+print(L_2)
+
+print(np.gradient(K_11, x, axis=0))
+
+# print(L_sq)
+
 L_sq_inv = np.linalg.inv(L_sq)
 
 u_fl = K_21 @ L_sq_inv @ l_mu
@@ -86,8 +93,8 @@ K_fl = K_11 - K_21 @ L_sq_inv @ K_12
 
 samples = stats.multivariate_normal.rvs(mean=u_fl, cov=K_fl, size=100)
 
-print(np.gradient(samples[0], x)[ind_1], np.gradient(samples[0], x)[ind_2])
+# print(np.gradient(samples[0], x)[ind_1], np.gradient(samples[0], x)[ind_2])
 
-plt.figure()
-plt.plot(x, samples.T, '-k', alpha=0.1)
-plt.show()
+# plt.figure()
+# plt.plot(x, samples.T, '-k', alpha=0.1)
+# plt.show()

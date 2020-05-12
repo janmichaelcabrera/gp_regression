@@ -65,8 +65,6 @@ class covariance_functions:
         Returns
         ----------
             C: float (array_like)
-                Returns a Squared Exponential square covariance matrix of size(x)
-                .. math:: C_{SE}(x_1, x_2) = \\tau_1^2 e^{-\\frac{1}{2} (d/b)^2} + \\tau_2^2 \\delta(x_1, x_2)
         """
         if len(x_1.shape) == 1:
             X_1 = [[i] for i in x_1]
@@ -99,8 +97,6 @@ class covariance_functions:
         Returns
         ----------
             C: float (array_like)
-                Returns a Squared Exponential square covariance matrix of size(x)
-                .. math:: C_{SE}(x_1, x_2) = \\tau_1^2 e^{-\\frac{1}{2} (d/b)^2} + \\tau_2^2 \\delta(x_1, x_2)
         """
         if len(x_1.shape) == 1:
             X_1 = [[i] for i in x_1]
