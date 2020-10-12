@@ -1,4 +1,3 @@
-from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -24,20 +23,25 @@ gp_obj.calc_mean_cov()
 # Pass posterior mean
 y_untrained = gp_obj.post_mean
 
-# Optimize bandwidht parameters using log-marginal likelihood 
+# Optimize bandwidth parameters using log-marginal likelihood 
 gp_obj.optimize_lml()
 
-# Run method for calculating posterior mean and posterior covariances
-gp_obj.calc_mean_cov()
+# Run method for performing regression
+gp_obj.regression()
 
 # Pass posterior mean
 y_hat = gp_obj.post_mean
 
+# 95% Confidence Region
+y_lo = y_hat - 1.96*gp_obj.post_var
+y_hi = y_hat + 1.96*gp_obj.post_var
 
+# Plot results
 plt.figure()
 plt.plot(x, y_obs, 'k.', label='Obs')
 plt.plot(x, y_true, label='True')
 plt.plot(x, y_untrained, label='Untrained GP\n$b=10$; $\\tau_1=10$')
 plt.plot(x, y_hat, label='Trained GP\n$b$={:.1f}'.format(gp_obj.cov_obj.b)+'; $\\tau_1$={:.1f}'.format(gp_obj.cov_obj.tau_1))
+plt.fill_between(x=x, y1=y_lo, y2=y_hi, color='gray', alpha=0.8, label='95% Confidence Region')
 plt.legend(loc=0)
 plt.show()
